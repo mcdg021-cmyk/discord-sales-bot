@@ -1,46 +1,30 @@
 import http from 'http';
+import 'dotenv/config';
+
+// Servidor HTTP para o Render
 http.createServer((_, res) => res.end('Bot online!')).listen(process.env.PORT || 3000);
 
-import 'dotenv/config';
-import { BotClient } from './client';
-import { connectDatabase } from './config/database';
-import { connectRedis } from './config/redis';
-import { logger } from './utils/logger';
-
 async function bootstrap(): Promise<void> {
+  const { BotClient } = await import('./client');
+  const { connectDatabase } = await import('./config/database');
+  const { connectRedis } = await import('./config/redis');
+  const { logger } = await import('./utils/logger');
+
   logger.info('🚀 Iniciando Discord Sales Bot...');
 
-  try {
-    await connectDatabase();
-    await connectRedis();
+  // Tentar conectar MongoDB sem travar o bot
+  connectDatabase().catch((err) => {
+    logger.error('MongoDB falhou, tentando novamente em 30s...', { err: err.message });
+    setTimeout(() => connectDatabase().catch(() => {}), 30000);
+  });
 
-    const client = new BotClient();
-    await client.initialize();
+  // Tentar conectar Redis sem travar o bot  
+  connectRedis().catch((err) => {
+    logger.warn('Redis falhou', { err: err.message });
+  });
 
-    process.on('SIGINT', async () => {
-      logger.info('🛑 Encerrando bot gracefully...');
-      client.destroy();
-      process.exit(0);
-    });
-
-    process.on('SIGTERM', async () => {
-      logger.info('🛑 SIGTERM recebido, encerrando...');
-      client.destroy();
-      process.exit(0);
-    });
-
-    process.on('unhandledRejection', (reason, promise) => {
-      logger.error('Unhandled Rejection', { reason, promise });
-    });
-
-    process.on('uncaughtException', (error) => {
-      logger.error('Uncaught Exception', { error });
-      process.exit(1);
-    });
-  } catch (error) {
-    logger.error('Falha ao iniciar o bot', { error });
-    process.exit(1);
-  }
+  const client = new BotClient();
+  await client.initialize();
 }
 
-bootstrap();
+bootstrap().catch(console.error);
