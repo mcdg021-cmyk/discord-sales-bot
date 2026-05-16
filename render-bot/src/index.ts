@@ -1,3 +1,6 @@
+import http from 'http';
+http.createServer((_, res) => res.end('Bot online!')).listen(process.env.PORT || 3000);
+
 import 'dotenv/config';
 import { BotClient } from './client';
 import { connectDatabase } from './config/database';
