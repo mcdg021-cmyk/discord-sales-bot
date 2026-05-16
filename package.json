@@ -1,0 +1,33 @@
+{
+  "name": "discord-sales-bot",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "npx tsx index.ts",
+    "dev": "npx tsx index.ts"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "mongoose": "^8.3.1",
+    "ioredis": "^5.3.2",
+    "winston": "^3.13.0",
+    "dotenv": "^16.4.5",
+    "axios": "^1.6.8",
+    "sharp": "^0.33.3",
+    "tesseract.js": "^5.0.5",
+    "qrcode": "^1.5.3",
+    "crypto-js": "^4.2.0",
+    "date-fns": "^3.6.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.2",
+    "@types/node": "^20.12.7",
+    "@types/qrcode": "^1.5.5",
+    "@types/crypto-js": "^4.2.2",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
